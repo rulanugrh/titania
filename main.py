@@ -8,6 +8,8 @@ def main(args: str):
         subprocess.run(["python", "./ogive/table-frequently.py"])
     elif args == "offclose":
         subprocess.run(["python", "./offclose/main.py"])
+    elif args == "population":
+        subprocess.run(["python", "./population-group-data/main.py"])
     else:
         print("Command Not Found")
 
