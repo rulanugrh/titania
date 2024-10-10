@@ -15,7 +15,6 @@ fx = [ sum(x) / 2 for x in data ]
 interval = max(data[0]) - min(data[0]) + 1
 # Mendapatkan cumulative dari data yang tersedia
 cumulative = numpy.cumsum(frequently)
-
 def get_mean() -> int:
     # Mengkalikan antara frequensi X dengan table Frequensi
     result = numpy.multiply(fx, frequently)
@@ -33,7 +32,7 @@ def get_median() -> int:
     # Mendapatkan nilai terbawah dari nilai cumulative
     get_bottom = [y for x, y in enumerate(data) if x == index[0]]
     # Return Hasil
-    result =  min(get_bottom[0]) - 0.5 + (((N - top_cumulative[-1]) * interval) / frequently[index[0]])
+    result = min(get_bottom[0]) - 0.5 + (((N - top_cumulative[-1])  * interval) / frequently[index[0]])
 
     return result
 
@@ -50,22 +49,25 @@ def get_modus() -> int:
     return result
 
 def get_quartil_two() -> int:
-    # Mendapatkan nilai  batas quartil 2
-    q2 = (Y * 2) / 4
-    # Get Cumulative dari Batas Quartil
-    get_cumulative = [ cumulative[x] for x in range(len(cumulative)) if cumulative[x] > q2 ]
-    # Get index by cumulative data
-    index = [ x for x in range(len(cumulative)) if cumulative[x] == get_cumulative[0] ]
-    # Get data from index
-    get_data = [y for x, y in enumerate(data) if x == index[0]]
-    # Return hasil 
-    result = min(get_data[0]) - 0.5 + (abs(q2 - get_cumulative[0]) * interval / frequently[index[0]])
+    # Mendapatkan nilai median frekuensi
+    # Ini didapatkan dari nilai cumulative yang lebih besar daripada N
+    median_frequently = [ x for x in cumulative if x > N ]
+    # Mendapatkan nlai cumulative sebelumnya dari nilai median
+    top_cumulative = [x for x in cumulative if x < median_frequently[0]]
+    # Mendaaptkan index data cumulative
+    index = [x for x in range(len(cumulative)) if cumulative[x] == median_frequently[0]]
+    # Mendapatkan nilai terbawah dari nilai cumulative
+    get_bottom = [y for x, y in enumerate(data) if x == index[0]]
+    # Return Hasil
+    result = min(get_bottom[0]) - 0.5 + (((N - top_cumulative[-1])  * interval) / frequently[index[0]])
 
     return result
 
 def get_quartil_three() -> int:
     # Mendapatkan nilai  batas quartil 3
-    q3 = (Y * 3) / 4
+    q3 = ((Y + 1) * 3) / 4
+    # Get Cumulative dari Batas Quartil
+    get_cumulative_bottom = [ cumulative[x] for x in range(len(cumulative)) if cumulative[x] < q3 ]
     # Get Cumulative dari Batas Quartil
     get_cumulative = [ cumulative[x] for x in range(len(cumulative)) if cumulative[x] > q3 ]
     # Get index by cumulative data
@@ -73,13 +75,15 @@ def get_quartil_three() -> int:
     # Get data from index
     get_data = [y for x, y in enumerate(data) if x == int("".join(map(str, index)))]
     # Return hasil 
-    result = min(get_data[0]) - 0.5 + (abs(q3 - get_cumulative[0]) * interval / frequently[index[0]])
+    result = min(get_data[0]) - 0.5 + ((q3 - get_cumulative_bottom[-1]) * interval / frequently[index[0]])
 
     return result
 
 def get_quartil_one() -> int:
     # Mendapatkan nilai batas quartil 1
-    q1 = (Y / 4)
+    q1 = ((Y + 1) / 4)
+    # Get Cumulative dari Batas Quartil
+    get_cumulative_bottom = [ cumulative[x] for x in range(len(cumulative)) if cumulative[x] < q1 ]
     # Get Cumulative dari Batas Quartil
     get_cumulative = [ cumulative[x] for x in range(len(cumulative)) if cumulative[x] > q1 ]
     # Get index by cumulative data
@@ -87,23 +91,24 @@ def get_quartil_one() -> int:
     # Get data from index
     get_data = [y for x, y in enumerate(data) if x == int("".join(map(str, index)))]
     # Return hasil 
-    result = min(get_data[0]) - 0.5 + (abs(q1 - get_cumulative[0]) * interval / frequently[index[0]])
-
+    result = min(get_data[0]) - 0.5 + ((q1 - get_cumulative_bottom[-1]) * interval / frequently[index[0]])
     return result
 
-def get_median_deviation() -> int:
+def get_median_deviation() -> int:    
     # Mencari nilai besar rata-rata dari titik tengah dan frekuensi
     fi_xi = numpy.multiply(fx, frequently)
     # Mencari nilai pembatas dengan membagikan dari total fi_xi / frequently
-    xA = float(f"{sum(fi_xi) / Y:.1f}")
+    xA = sum(fi_xi) / Y
     # Mencari nilai dari median xi  - xA
     xi_xA = [ abs(x - xA) for x in fx ]
+    # result for calculation
+    res = numpy.multiply(xi_xA, frequently)
     # Returh hasil operasi
-    return sum(xi_xA) / Y
+    return sum(res) / Y
 
 def get_desil(k: int) -> int:
     # Mencari nilai interval desil
-    y = (k * ( Y + 1)) / 10
+    y = (k * Y + 1) / 10
     # Mencari data didalam frekuensi kumulatif yang lebih kecil dari interval desil
     top_cumulative = [x for x in cumulative if x < y]
     # Mencari index dari data kumulative yang lebih besar daripada interval desil
@@ -117,7 +122,7 @@ def get_desil(k: int) -> int:
 
 def get_persentil(k: int) -> int:
     # Mencari nilai interval desil
-    y = (k * ( Y + 1)) / 100
+    y = (k * Y) / 100
     # Mencari data didalam frekuensi kumulatif yang lebih kecil dari interval desil
     top_cumulative = [x for x in cumulative if x < y]
     # Mencari index dari data kumulative yang lebih besar daripada interval desil
@@ -159,18 +164,17 @@ if __name__ == "__main__":
     head = ["Judul", "Hasil"]
     data = [
         ["Mean", f"{get_mean()}"],
-        ["Median", f"{get_median():.3f}"],
-        ["Modus", f"{get_modus():.1f}"],
-        ["Quartil 1", f"{get_quartil_one():.1f}"],
-        ["Quartil 2", f"{get_quartil_two():.1f}"],
-        ["Quartil 3", f"{get_quartil_three():.1f}"],
-        ["Quartil 1", f"{get_quartil_one():.1f}"],
-        ["Jangkauan Quartil", f"{get_quartil_three() - get_quartil_one():.1f}"],
-        ["Simpangan Rata Rata", f"{get_median_deviation():.1f}"],
+        ["Median", f"{get_median()}"],
+        ["Modus", f"{get_modus():.3f}"],
+        ["Quartil 1", f"{get_quartil_one():.3f}"],
+        ["Quartil 2", f"{get_quartil_two():.3f}"],
+        ["Quartil 3", f"{get_quartil_three():.3f}"],
+        ["Jangkauan Quartil", f"{get_quartil_three() - get_quartil_one():.3f}"],
+        ["Simpangan Rata Rata", f"{get_median_deviation():.3f}"],
         ["Desil 7", f"{get_desil(7):.3f}"],
-        ["Persentil 50", f"{get_persentil(50):.1f}"],
-        ["Varians", f"{get_varians():.1f}"],
-        ["Standar Deviasi", f"{get_standar_deviation():.1f}"],
+        ["Persentil 50", f"{get_persentil(50):.3f}"],
+        ["Varians", f"{get_varians():.3f}"],
+        ["Standar Deviasi", f"{get_standar_deviation():.3f}"],
     ]
 
     print(tabulate(data, headers=head, tablefmt="simple_grid"))
