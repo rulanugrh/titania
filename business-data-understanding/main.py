@@ -20,6 +20,7 @@ def printout():
     Returns:
         Return data
     """
+    # return data variabel
     return data
 
 def info():
@@ -30,6 +31,7 @@ def info():
     Returns:
         info about dataset
     """
+    # return data info
     return data.info()
 
 def get_by_category(category: str) -> pd.DataFrame:
@@ -43,6 +45,7 @@ def get_by_category(category: str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: returning dataframe with contains string
     """
+    # for get data by caegory with exception string 
     result = data[data['Category'].str.contains(category)]
     return result
 
@@ -57,6 +60,7 @@ def get_by_product(product: str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: returning dataframe with contains string
     """
+    # for get data by product name with exception string
     result = data[data['Product Name'].str.contains(product)]
     return result
 
@@ -70,8 +74,10 @@ def get_null():
     """
     msg = ""
 
+    # for check if data have null value
     if data.isnull().sum().sum() <= 0:
         msg += "Data tidak ada yang Null"
+    # return total null value if data have null
     else:
         msg += f"Total data null adalah: {data.isnull().sum().sum()}"
     
