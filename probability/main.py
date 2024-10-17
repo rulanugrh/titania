@@ -80,6 +80,8 @@ if __name__ == "__main__":
     print(f"Keanggotaan terdiri dari 2 Pria dan 1 Wanita: {combination(4, 2) * combination(6, 1)}")
     print(f"Banyak cara Minimal 2 Perempuan: {harapan(x=[2, 3, 4], y=[3, 2, 1], n=8)}")
     print(f"Banyak peluang dadu yang lebih dari 4 dalam 6 iterasi adalah: {probability(4, 6, "dadu", ">")}")
+    print(f"Cara 4 buku dalam 1 rauk: {factorial(4)}")
+    print(f"Cara memilih 3 orang dari 10 orang: {combination(10, 3)}")
 
     print(f"Probabilitas bola kedua bewarna biru adalah: {loop_probability(m=4, n=7, count=0)}")
     print(f"Harapan dari X: {harapan(x=[1, 2, 3, 4, 5, 6], y=[1, 1, 1, 1, 1, 1], n=6)}")
